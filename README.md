@@ -38,10 +38,13 @@ In order to enable the command in all the directories of your computer ypu have 
    
 5. click Apply and then OK to have the change take effect.
 
+
 - Example for running a command:
+  
   fib bundle --output file1.txt --lang "c c++ java javascript" --sort --author "anonimus"
+
   -> Will return:
-     an output file in the current directory, that includes, ordered by the programming language,
+     An output file in the current directory, that includes, ordered by the programming language,
      all the files that are written in c, c++, java and javascript and are under the current directory.
      Including "anonimus" as the author, on the buttom of the output file (file1.txt)
 
