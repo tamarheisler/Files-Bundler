@@ -60,7 +60,6 @@ bundleCommand.SetHandler((output, langueges, note, author, sort, remove) =>
         }
         if (sort == true)
         {
-            Console.WriteLine("sort option is true");
             requestedFilesList = Functions.sortByProgrammingLangs(requestedFilesList);
         }
         else
@@ -87,17 +86,11 @@ bundleCommand.SetHandler((output, langueges, note, author, sort, remove) =>
 
         if (remove == true)
         {
-            Console.WriteLine("remove");
             try
             {
                 bool success = Functions.RemoveEmptyLinesFromFile(output.FullName);
 
-                if (success)
-                {
-                    Console.WriteLine("Empty lines removed from the file.");
-                }
-                else
-                {
+                if (!success) { 
                     Console.WriteLine("Failed to remove empty lines from the file.");
                 }
             }
@@ -112,17 +105,16 @@ bundleCommand.SetHandler((output, langueges, note, author, sort, remove) =>
             {
                 using (StreamWriter writer = new StreamWriter(output.FullName, true))
                 {
-                    writer.WriteLine("\nAuthor: " + author);
+                    writer.WriteLine("\n\n Author: " + author);
                 }
             }
             if (note == true)
             {
                 using (StreamWriter writer = new StreamWriter(output.FullName, true))
                 {
-                    writer.WriteLine("\nnote is on!");
+                    writer.WriteLine("\n\n Note:" + Directory.GetCurrentDirectory());
                 }
             }
-            Console.WriteLine("Files bundled successfully to " + output.FullName);
         }
         catch (Exception ex)
         {
