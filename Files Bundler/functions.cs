@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
 namespace Files_Bundler
 {
     public static class Functions
     {
-        //function that returns all the files that are in the binary tree of the given directory name.
         public static List<string> DirSearch(string sDir)
         {
             List<string> files = new List<String>();
@@ -23,77 +18,81 @@ namespace Files_Bundler
                     files.AddRange(DirSearch(d));
                 }
             }
-            catch (System.Exception excpt)
+            catch (Exception ex)
             {
-                Console.WriteLine(excpt.Message);
+                Console.WriteLine(ex.Message);
             }
-
             return files;
         }
-
-
-
-        // function that gets 
-
         public static List<string> GetListOfProgrammingLanguages()
         {
-            // Create and return a list of programming languages
-            return new List<string> { "C", "C++", "C#", "Java", "Python", "JavaScript", "Ruby", "Swift", "Kotlin", "Rust", "Go", "PHP", "Perl", "TypeScript", "Dart", "R", "MATLAB", "Fortran", "COBOL", "Ada", "Lisp", "Scheme", "Prolog", "Haskell", "Erlang", "Groovy", "Scala", "Ruby on Rails", "HTML/CSS", "SQL", "Assembly language", "VHDL", "Verilog", "Scratch", "Blockly" };
-
+            return new List<string> { "c", "c++", "c#", "java", "python", "javascript", "js", "ruby", "swift", "kotlin", "rust", "go", "php", "perl", "typescript", "dart", "r", "matlab", "fortran", "cobol", "ada", "lisp", "scheme", "prolog", "haskell", "erlang", "groovy", "scala", "ruby", "html", "css", "sql", "assembly language", "vhdl", "verilog", "scratch", "blockly" };
         }
-
+        public static List<string> removeUnnecessaryLangs(List<string> filesNames)
+        {
+            List<string> validLanguages = GetListOfProgrammingLanguages();
+            List<string> filteredFileNames = new List<string>();
+            foreach (string fileName in filesNames)
+            {
+                string language = GetLanguageFromExtension(fileName);
+                if (validLanguages.Contains(language))
+                {
+                    filteredFileNames.Add(fileName);
+                }
+            }
+            return filteredFileNames;
+        }
         public static string GetLanguageFromExtension(string fileName)
         {
             string extension = Path.GetExtension(fileName).TrimStart('.').ToLower();
-
-            // Define a dictionary to map file extensions to programming languages
             Dictionary<string, string> extensionToLanguage = new Dictionary<string, string>
-        {
-            { "c", "C" },
-            { "cpp", "C++" },
-            { "cs", "C#" },
-            { "java", "Java" },
-            { "py", "Python" },
-            { "js", "JavaScript" },
-            { "rb", "Ruby" },
-            { "swift", "Swift" },
-            { "kt", "Kotlin" },
-            { "rs", "Rust" },
-            { "go", "Go" },
-            { "php", "PHP" },
-            { "pl", "Perl" },
-            { "ts", "TypeScript" },
-            { "dart", "Dart" },
-            { "r", "R" },
-            { "m", "MATLAB" },
-            { "f90", "Fortran" },
-            { "cob", "COBOL" },
-            { "ada", "Ada" },
-            { "lisp", "Lisp" },
-            { "scm", "Scheme" },
-            { "pro", "Prolog" },
-            { "hs", "Haskell" },
-            { "erl", "Erlang" },
-            { "groovy", "Groovy" },
-            { "scala", "Scala" },
-            { "html", "HTML/CSS" },
-            { "css", "HTML/CSS" },
-            { "sql", "SQL" },
-            { "asm", "Assembly language" },
-            { "vhd", "VHDL" },
-            { "v", "Verilog" },
-            { "sb3", "Scratch" },
-            { "blk", "Blockly" }
-        };
-
-            // Check if the extension exists in the mapping, and return the corresponding language
+            {
+                { "c", "c" },
+                { "cpp", "c++" },
+                { "cs", "c#" },
+                { "json", "json" },
+                { "java", "java" },
+                { "py", "python" },
+                { "js", "javascript" },
+                { "js", "java-script" },
+                { "rb", "ruby" },
+                { "swift", "swift" },
+                { "kt", "kotlin" },
+                { "rs", "rust" },
+                { "go", "go" },
+                { "php", "php" },
+                { "pl", "perl" },
+                { "ts", "type-script" },
+                { "ts", "typescript" },
+                { "dart", "dart" },
+                { "r", "r" },
+                { "m", "matlab" },
+                { "f90", "fortran" },
+                { "cob", "cobol" },
+                { "ada", "ada" },
+                { "lisp", "lisp" },
+                { "scm", "scheme" },
+                { "pro", "prolog" },
+                { "hs", "haskell" },
+                { "erl", "erlang" },
+                { "groovy", "groovy" },
+                { "scala", "scala" },
+                { "html", "html" },
+                { "css", "css" },
+                { "sql", "sql" },
+                { "asm", "assembly" },
+                { "vhd", "vhdl" },
+                { "v", "verilog" },
+                { "sb3", "scratch" },
+                { "blk", "blockly" }
+            };
             if (extensionToLanguage.TryGetValue(extension, out string language))
             {
                 return language;
             }
             else
             {
-                return "Unknown"; // Return "Unknown" for unrecognized extensions
+                return "Unknown";
             }
         }
 
@@ -105,7 +104,7 @@ namespace Files_Bundler
                 bool isValidLang = false;
                 foreach (var vLang in validProgrammingLanguages)
                 {
-                    if (lang == vLang)
+                    if (lang.ToLower() == vLang)
                     {
                         isValidLang = true;
                     }
@@ -115,10 +114,31 @@ namespace Files_Bundler
                     return false;
                 }
             }
-
             return true;
         }
+        public static List<string> sortByProgrammingLangs(List<string> listToSort)
+        {
+            var sortedFiles = listToSort
+                .OrderBy(name => Path.GetExtension(name)) 
+                .ToList();
 
-
+            return sortedFiles;
+        }
+        public static bool RemoveEmptyLinesFromFile(string filePath)
+        {
+            try
+            {
+                string content = File.ReadAllText(filePath);
+                string[] lines = content.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+                string nonEmptyContent = string.Join(Environment.NewLine, lines.Where(line => !string.IsNullOrWhiteSpace(line)));
+                File.WriteAllText(filePath, nonEmptyContent);
+                return true;
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine("An error occurred while processing the file: " + e.Message);
+                return false;
+            }
+        }
     }
 }

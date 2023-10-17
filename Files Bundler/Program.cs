@@ -1,19 +1,17 @@
 ﻿using Files_Bundler;
 using System.CommandLine;
 
-
 var rootCommand = new RootCommand("Root command for file bundler CLI");
 var bundleCommand = new Command("bundle", "Bundle code files to a single file");
 var bundleOutputOption = new Option<FileInfo>("--output", "file path and name");
-var bundleNoteOption = new Option<bool>("--note", "Include source code references as comments in the bundled fil");
-var bundleLangOption = new Option<string>("--lang", "required langueges for the bundled output")
+var bundleNoteOption = new Option<bool>("--note", "Include source code references as comments in the bundled file");
+var bundleSortOption = new Option<bool>("--sort", "file path and name"); 
+var bundleRemoveOption = new Option<bool>("--remove-empty-lines", "Remove empty lines in the code files");
+var bundleAuthorOption = new Option<string>("--author", "file author name");
+var bundleLangOption = new Option<string>("--lang", "required languages for the bundled output")
 {
     IsRequired = true,
 };
-var bundleSortOption = new Option<bool>("--sort", "file path and name"); //if true- sort by program lang, else- by name of file 
-var bundleRemoveOption = new Option<bool>("--remove-empty-lines", "Remove empty lines in the code files");
-var bundleAuthorOption = new Option<string>("--author", "file author name");
-
 
 bundleCommand.AddOption(bundleOutputOption);
 bundleCommand.AddOption(bundleLangOption);
@@ -26,70 +24,120 @@ bundleCommand.SetHandler((output, langueges, note, author, sort, remove) =>
 {
     try
     {
-        Console.WriteLine("hello " + output.Name);
-        List<string> filesNames = Functions.DirSearch(Directory.GetCurrentDirectory()); // list of all the code files names in current folder
+        List<string> filesNames = Functions.DirSearch(Directory.GetCurrentDirectory());
+        filesNames = Functions.removeUnnecessaryLangs(filesNames);
+        List<string> requestedFilesList = new List<string>();
         File.Create(output.FullName).Close();
-
-        /*foreach (var file in filesNames) // checks if the function of finding all the code files is working or not
-        {                                  // and also the func of the extensions.  both works!
-            Console.WriteLine(file + ", ");
-            Console.WriteLine(Functions.GetLanguageFromExtension(file) + ", ");
-        }*/
-
-        using (StreamWriter writer = new StreamWriter(output.FullName))
+        if (langueges == "all")
         {
-            writer.WriteLine("Hello new file!");
+            requestedFilesList = filesNames;
         }
-
-        // -----------------Langs option:
-        if (langueges == "all") 
-        {
-            Console.WriteLine("all langs");
-        }
-        else //the user want a list of specific langs
+        else
         {
             List<string> givenLangs = langueges.Split(' ').ToList();
             List<string> validProgrammingLanguages = Functions.GetListOfProgrammingLanguages();
             bool givenLangsValidation = Functions.checkAllGivenLangsValidation(givenLangs, validProgrammingLanguages);
             if (!givenLangsValidation)
             {
-                throw new Exception("ERROR: one or more of the given langueges is invalid");
+                throw new Exception("ERROR: one or more of the given languages is invalid");
             }
-            Console.WriteLine("there is langs in!, you don't want all");
+            foreach (var file in filesNames)
+            {
+                string fileLang = Functions.GetLanguageFromExtension(file);
+                bool includeFile = false;
+                foreach (var lang in givenLangs)
+                {
+                    if (fileLang == lang)
+                    {
+                        includeFile = true;
+                    }
+                }
+                if (includeFile == true)
+                {
+                    requestedFilesList.Add(file);
+                }
+            }
         }
-
-        // -----------------Note option:
-        if (note == true) //check the note
-        {
-
-            Console.WriteLine("note option is true");
-        }
-        // -----------------Sort option:
         if (sort == true)
         {
             Console.WriteLine("sort option is true");
-            // sort by the programming languages
+            requestedFilesList = Functions.sortByProgrammingLangs(requestedFilesList);
         }
         else
         {
-            // sort by A -Z
+            requestedFilesList = requestedFilesList.OrderBy(name => Path.GetFileName(name)).ToList();
         }
+        try
+        {
+            using (var outputFile = new FileStream(output.FullName, FileMode.Create))
+            {
+                foreach (string fileLocation in requestedFilesList)
+                {
+                    using (var inputFile = new FileStream(fileLocation, FileMode.Open))
+                    {
+                        inputFile.CopyTo(outputFile);
+                    }
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+
         if (remove == true)
         {
-            // remove lines in the final file
+            Console.WriteLine("remove");
+            try
+            {
+                bool success = Functions.RemoveEmptyLinesFromFile(output.FullName);
+
+                if (success)
+                {
+                    Console.WriteLine("Empty lines removed from the file.");
+                }
+                else
+                {
+                    Console.WriteLine("Failed to remove empty lines from the file.");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        try
+        {
+            if (author != null)
+            {
+                using (StreamWriter writer = new StreamWriter(output.FullName, true))
+                {
+                    writer.WriteLine("\nAuthor: " + author);
+                }
+            }
+            if (note == true)
+            {
+                using (StreamWriter writer = new StreamWriter(output.FullName, true))
+                {
+                    writer.WriteLine("\nnote is on!");
+                }
+            }
+            Console.WriteLine("Files bundled successfully to " + output.FullName);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
         }
     }
     catch (DirectoryNotFoundException ex)
     {
-        Console.WriteLine("ERROR: file path is invalid");
+        Console.WriteLine("ERROR: output file path is invalid");
     }
     catch (Exception ex)
     {
-        Console.WriteLine(ex.Message);
+        Console.WriteLine("An error occurred: " + ex.Message);
     }
 }, bundleOutputOption, bundleLangOption, bundleNoteOption, bundleAuthorOption, bundleSortOption, bundleRemoveOption);
 
 rootCommand.AddCommand(bundleCommand);
 rootCommand.InvokeAsync(args);
-
-
