@@ -18,6 +18,10 @@ Add options to your command to enable another featurs:
 
 6.  --author -> Type it and the program's creator name to register the name of the creator of the file.
 
+7.  --create-rsp -> creating response file with the command, then exports it as a bat file, you have only to click this new file to run the script (to bundle your files)
+
+   🎉 Aliases are now available! use the first letter of any option to use it (e.g.: --s to sort the files instead of  --sort 🎉
+
 In order to bundle code files in the directory <dir> just open the CLI in the directory and type: 
 
 <fib bundle --language C C++ Java --output file1.txt --note> then you will get a new bundled file (file1.txt) 
@@ -34,7 +38,7 @@ In order to enable the command in all the directories of your computer ypu have 
 
 3. On the Advanced tab, click Environment Variables.
 
-4. Click New to create a new environment variable paste the project path in the blank line.
+4. Click New to create a new environment variable paste the publish directory (in the project directory) path in the blank line.
    
 5. click Apply and then OK to have the change take effect.
 
