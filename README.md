@@ -18,7 +18,7 @@ Add options to your command to enable another featurs:
 
 6.  --author -> Type it and the program's creator name to register the name of the creator of the file.
 
-7.  --create-rsp -> creating response file with the command, then exports it as a bat file, you have only to click this new file to run the script (to bundle your files)
+7.  --create-rsp -> creating response file with the command, then exports it as a bat file, you have only to click this new file, ending with .bat extension, to run the script (to bundle your files). In order to run the batch file, you should write it's name in the cmd.
 
    🎉 Aliases are now available! use the first letter of any option to use it (e.g.: --s to sort the files instead of  --sort 🎉
 
