@@ -1,5 +1,7 @@
 ﻿
 
+using System;
+
 namespace Files_Bundler
 {
     public static class Functions
@@ -138,5 +140,29 @@ namespace Files_Bundler
                 return false;
             }
         }
+
+        public static bool createRspFile(FileInfo output, string language, bool note, string author, bool sort, bool remove, FileInfo responseFile)
+        {
+            var responseFileContents = $"fib bundle " +
+                $"--output {output.FullName} " +
+                $"--language {language} " +
+                (note ? "--note " : string.Empty) +
+                (!string.IsNullOrEmpty(author) ? $"--author {author} " : string.Empty) +
+                (sort ? "--sort " : string.Empty) +
+                (remove ? "--remove-empty-lines " : string.Empty);
+
+            try
+            {
+                File.WriteAllText(responseFile.FullName, responseFileContents);
+                Console.WriteLine($"Response file '{responseFile.FullName}' created successfully.");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating response file: {ex.Message}");
+                return false;
+            }
+        }
+
     }
 }
