@@ -1,1 +1,0 @@
-fib bundle --output file3.txt --language all --author tamar 
